@@ -41,29 +41,19 @@ jobs:
         name: build
         path: dist/
   deploy:
-    needs: build
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download Build Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: build
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    - name: Install SSH and SCP Dependencies
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y openssh-client sshpass
-
-    - name: Set up SSH Agent
-      run: |
-        eval "$(ssh-agent -s)"
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > private_key.pem
-        chmod 600 private_key.pem
-        ssh-add private_key.pem
-        
-    - name: Deploy to Server
-      env:
-        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-      run: |
-        sshpass -p "$SSH_PASSWORD" scp -o StrictHostKeyChecking=no -r ./dist/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:/var/www/html/deployment/
+      - name: Deploy to Test Server
+        env:
+         REMOTE_PATH: /var/www/html/
+        if: startsWith(github.ref, 'refs/tags/') && contains(github.ref, 'rc')
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          cd ~/.ssh
+          chmod 600 id_rsa
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} 'echo "${{secrets.REPO_DEPLOY_KEY}}" > ~/.ssh/gh_key && chmod 600 ~/.ssh/gh_key && eval `ssh-agent -s` && ssh-add ~/.ssh/gh_key && cd ${{ env.REMOTE_PATH }} 
