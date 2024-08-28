@@ -52,9 +52,13 @@ jobs:
 
     - name: Install SSH and SCP Dependencies
       run: |
-        command -v ssh-agent > /dev/null || (apt-get update -y && apt-get install -y openssh-client)
-        apt-get update -y && apt-get install -y sshpass
+        command -v ssh-agent > /dev/null || (sudo apt-get update -y && sudo apt-get install -y openssh-client)
+        sudo apt-get update -y && sudo apt-get install -y sshpass
 
+    - name: Set up SSH Agent
+      run: |
+        eval "$(ssh-agent -s)"
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
     - name: Set up SSH Agent
       run: |
         eval "$(ssh-agent -s)"
