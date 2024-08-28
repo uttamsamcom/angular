@@ -55,14 +55,13 @@ jobs:
         command -v ssh-agent > /dev/null || (sudo apt-get update -y && sudo apt-get install -y openssh-client)
         sudo apt-get update -y && sudo apt-get install -y sshpass
 
-    - name: Set up SSH Agent
+    - name: Debug SSH Key Handling
       run: |
-        eval "$(ssh-agent -s)"
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
-    - name: Set up SSH Agent
-      run: |
-        eval "$(ssh-agent -s)"
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > private_key.pem
+        cat private_key.pem
+        chmod 600 private_key.pem
+        ssh-add private_key.pem
+        
     - name: Deploy to Server
       env:
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
