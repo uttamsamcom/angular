@@ -50,10 +50,15 @@ jobs:
       with:
         name: build
 
+    - name: Install SSH and SCP Dependencies
+      run: |
+        command -v ssh-agent > /dev/null || (apt-get update -y && apt-get install -y openssh-client)
+        apt-get update -y && apt-get install -y sshpass
+
     - name: Set up SSH Agent
-      uses: webfactory/ssh-agent@v0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        eval "$(ssh-agent -s)"
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
     - name: Deploy to Server
       env:
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
