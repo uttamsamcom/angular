@@ -47,24 +47,32 @@ jobs:
       - name: Verify Downloaded Directory Structure
         run: ls -R /home/runner/work/angular/angular/
 
+      - name: Create SSH Directory
+        run: mkdir -p ~/.ssh
+
+      - name: Add SSH Key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
       - name: Install SSH Client
         run: |
-          command -v ssh-agent > /dev/null || (sudo apt-get update -y && sudo apt-get install openssh-client -y)
-          sudo apt-get update -y && sudo apt-get install -y openssh-client sshpass
+          apt-get update -y
+          apt-get install -y openssh-client sshpass
 
       - name: Start SSH Agent and Add Key
         run: |
           eval "$(ssh-agent -s)"
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' | ssh-add -
+          ssh-add ~/.ssh/id_rsa
 
       - name: Deploy to Test Server
         env:
           REMOTE_PATH: /var/www/html/
         run: |
           # Check if the dist directory is available in the downloaded path
-          if [ -d "/home/runner/work/angular/angular/" ]; then
+          if [ -d "/home/runner/work/angular/angular/dist" ]; then
             echo "Deploying dist contents to server at ${{ secrets.SSH_HOST }}"
-            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r /home/runner/work/angular/angular/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}
+            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r /home/runner/work/angular/angular/dist/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}
           else
             echo "dist directory not found!"
             exit 1
