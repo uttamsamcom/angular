@@ -34,7 +34,11 @@ jobs:
       - name: Build Angular Project
         run: npm run build --prod
 
-      # Optional Step 5: Upload the build artifacts (optional)
+      # Step 5: Verify the dist directory exists after build
+      - name: Verify dist directory after build
+        run: ls -la dist
+
+      # Step 6: Upload the build artifacts
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -45,14 +49,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      # Step 1: Download Build Artifacts
       - name: Download Build Artifacts
         uses: actions/download-artifact@v3
         with:
           name: build
 
+      # Step 2: Verify the dist directory after download
+      - name: Verify dist directory after download
+        run: ls -la dist
+
+      # Step 3: Install SSH Client
       - name: Install SSH Client
         run: sudo apt-get install -y openssh-client
 
+      # Step 4: Deploy to Test Server
       - name: Deploy to Test Server
         env:
           REMOTE_PATH: /var/www/html/
@@ -68,4 +79,3 @@ jobs:
           else
             echo "dist directory not found!"
             exit 1
-          fi
