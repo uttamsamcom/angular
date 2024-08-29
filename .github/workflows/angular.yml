@@ -49,8 +49,8 @@ jobs:
 
       - name: Install SSH Client
         run: |
-          command -v ssh-agent > /dev/null || (apt-get update -y && apt-get install openssh-client -y)
-          apt-get update -y && apt-get install -y openssh-client sshpass
+          command -v ssh-agent > /dev/null || (sudo apt-get update -y && sudo apt-get install openssh-client -y)
+          sudo apt-get update -y && sudo apt-get install -y openssh-client sshpass
 
       - name: Start SSH Agent and Add Key
         run: |
