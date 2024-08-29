@@ -67,8 +67,7 @@ jobs:
       - name: Clean Up Remote Server
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "rm -rf /var/www/html/aadpc"
-
-      - name: Deploy to Test Server
+          
       - name: Deploy to Test Server
         env:
           REMOTE_PATH: /var/www/html/
