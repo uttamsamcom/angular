@@ -72,9 +72,10 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
           # Check if the dist directory is available in the downloaded path
-          if [ -d "/home/runner/work/angular/angular/dist" ]; then
-            echo "Deploying dist contents to server at ${{ secrets.SSH_HOST }}"
-            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r /home/runner/work/angular/angular/dist/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}
+           if [ -d "/home/runner/work/angular/angular/dist" ]; then
+          echo "Deploying dist contents to server at ${{ secrets.SSH_HOST }}"
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r /home/runner/work/angular/angular/dist/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}
           else
-            echo "dist directory not found!"
-            exit 1
+          echo "dist directory not found!"
+          exit 1
+          fi
