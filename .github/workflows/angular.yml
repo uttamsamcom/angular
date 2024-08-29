@@ -62,7 +62,7 @@ jobs:
           REMOTE_PATH: /var/www/html/
         run: |
           # Check if the dist directory is available in the downloaded path
-          if [ -d "/home/runner/work/angular/angular/dist" ]; then
+          if [ -d "/home/runner/work/angular/angular/" ]; then
             echo "Deploying dist contents to server at ${{ secrets.SSH_HOST }}"
             scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r /home/runner/work/angular/angular/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}
           else
