@@ -57,8 +57,8 @@ jobs:
 
       - name: Install SSH Client
         run: |
-          apt-get update -y
-          apt-get install -y openssh-client sshpass
+          sudo apt-get update -y
+          sudo apt-get install -y openssh-client sshpass
 
       - name: Start SSH Agent and Add Key
         run: |
@@ -70,9 +70,9 @@ jobs:
           REMOTE_PATH: /var/www/html/
         run: |
           # Check if the dist directory is available in the downloaded path
-          if [ -d "/home/runner/work/angular/angular/dist" ]; then
+          if [ -d "/home/runner/work/angular/angular/" ]; then
             echo "Deploying dist contents to server at ${{ secrets.SSH_HOST }}"
-            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r /home/runner/work/angular/angular/dist/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}
+            sudo scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r /home/runner/work/angular/angular/* ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}
           else
             echo "dist directory not found!"
             exit 1
